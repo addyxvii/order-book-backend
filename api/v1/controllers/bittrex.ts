@@ -1,13 +1,12 @@
-import io from 'socket.io-client'; 
+import signalR from '@microsoft/signalr'; 
 
-const socket = io.connect('wss://api.bittrex.com/v3/markets/ETH-BTC/orderbook?depth=25', {
-    reconnectionDelayMax: 1000,
-});
-
-socket.on('connect', () => {
-    console.log('connected');
-});
-
+const hub = ['c3']
+const client = new signalR.client('wss://socket-v3.bittrex.com/signalr', hub);
+    client.serviceHandlers.messageReceived = messageReceived;
+    client.serviceHandlers.connected = () => {
+      console.log('Connected');
+      return resolve(client)
+    }
 
 
 
