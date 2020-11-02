@@ -18,11 +18,12 @@ poloniex.connect();
 poloniex.on("open", () => poloniex.subscribe('BTC_ETH'));
 poloniex.on("message", (message) => console.log(message));
 
-
-bittrex.getorderbook( { market : 'BTC-ETH', depth : 10, type : 'both' }, function( data: any ) {
-
-    data.result.buy.forEach(function(dataset: any) { console.log(dataset); });
-    data.result.sell.forEach(function(dataset: any) { console.log(dataset); });
+bittrex.websockets.subscribe(['BTC-ETH'], (data: any) => {
+  if (data.M === 'updateExchangeState') {
+    data.A.forEach((data_for: any) => {
+      console.log('Market Update for '+ data_for.MarketName, data_for);
+    });
+  }
 });
 
 app.listen(PORT, () => {
