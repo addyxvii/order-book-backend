@@ -31,11 +31,13 @@ socketServer.on('connect', (socket) => {
   socket.on('fetchPolinexData', () => {
 
     console.log('client wants polinex data')
-
     poloniex.connect();
     poloniex.on("open", () => poloniex.subscribe('BTC_ETH'));
-    poloniex.on("message", (message) => {
-      socket.emit('recievePoloniexData', { message });
+    poloniex.on("message", (data: any) => {
+      if(data.currencyPair){
+        let poloniexData = (({type, price, size}) => ({type, price, size}))(data);
+        socket.emit('recievePoloniexData', { poloniexData });
+      }    
     });
   })
   // browser sends the "fetchBittrexData" message, and it is recieved here
@@ -43,7 +45,7 @@ socketServer.on('connect', (socket) => {
 
     console.log(`client wants us to fetch bittrex data`)
 
-    // FETCH BITTREX DATA HERE 
+  //   // FETCH BITTREX DATA HERE 
     bittrex.websockets.subscribe(['BTC-ETH'], (data: any) => {
       if (data.M === 'updateExchangeState') {
         return data.A.forEach((data_for: any) => {
