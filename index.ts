@@ -48,11 +48,20 @@ socketServer.on('connect', (socket) => {
   //   // FETCH BITTREX DATA HERE 
     bittrex.websockets.subscribe(['BTC-ETH'], (data: any) => {
       if (data.M === 'updateExchangeState') {
-        return data.A.forEach((data_for: any) => {
-          socket.emit('recieveBittrexData', { [data_for.MarketName]: data_for });
+          let asks
+          let bids
+    
+        data.A[0].Buys.forEach((data_for: any) => {
+          bids = (({Rate, Quantity}) => ({Rate, Quantity, type : 'bid'}))(data_for);
         });
+    
+        data.A[0].Sells.forEach((data_for: any) => {
+          asks = (({Rate, Quantity}) => ({Rate, Quantity, type : 'ask'}))(data_for);
+        });
+    
+          socket.emit('recieveBittrexData', { asks, bids });    
       }
-    });
+    });  
   });
 });
 
