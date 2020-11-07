@@ -23,29 +23,22 @@ app.use(cors())
     next();
   })
 
-
 socketServer.on('connect', (socket) => {
 
-  console.log('Socket connected')
-
   socket.on('fetchPolinexData', () => {
-
-    console.log('client wants polinex data')
     poloniex.connect();
     poloniex.on("open", () => poloniex.subscribe('BTC_ETH'));
     poloniex.on("message", (data: any) => {
       if(data.currencyPair){
-        let poloniexData = (({type, price, size}) => ({type, price, size}))(data);
-        socket.emit('recievePoloniexData', { poloniexData });
+        let poloniexData = (({exchange,type, price, size}) => ({exchange: 'poloniex',type, price, size}))(data);
+        console.log(poloniexData);
+        socket.emit('recievePoloniexData',  poloniexData )
+        ;
       }    
     });
   })
-  // browser sends the "fetchBittrexData" message, and it is recieved here
+  
   socket.on('fetchBittrexData', () => {
-
-    console.log(`client wants us to fetch bittrex data`)
-
-  //   // FETCH BITTREX DATA HERE 
     bittrex.websockets.subscribe(['BTC-ETH'], (data: any) => {
       if (data.M === 'updateExchangeState') {
           let asks
@@ -58,10 +51,13 @@ socketServer.on('connect', (socket) => {
         data.A[0].Sells.forEach((data_for: any) => {
           asks = (({Rate, Quantity}) => ({Rate, Quantity, type : 'ask'}))(data_for);
         });
-    
           socket.emit('recieveBittrexData', { asks, bids });    
       }
     });  
+
+  socketServer.on('connection', (socket) => {
+    setTimeout(() => socket.disconnect(true), 1000);
+    });
   });
 });
 
