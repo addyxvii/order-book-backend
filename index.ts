@@ -30,8 +30,7 @@ socketServer.on('connect', (socket) => {
     poloniex.on("open", () => poloniex.subscribe('BTC_ETH'));
     poloniex.on("message", (data: any) => {
       if(data.currencyPair){
-        let poloniexData = (({exchange,type, price, size}) => ({exchange: 'poloniex',type, price, size}))(data);
-        console.log(poloniexData);
+        let poloniexData = (({type, price, size}) => ({exchange: 'poloniex',type, price, size}))(data);
         socket.emit('recievePoloniexData',  poloniexData )
         ;
       }    
@@ -44,20 +43,16 @@ socketServer.on('connect', (socket) => {
           let asks
           let bids
     
-        data.A[0].Buys.forEach((data_for: any) => {
-          bids = (({Rate, Quantity}) => ({Rate, Quantity, type : 'bid'}))(data_for);
+        data.A[0].Buys.forEach((data: any) => {
+          bids = (({Rate, Quantity}) => ({exchange: 'bittrex', Rate, Quantity, type : 'bid'}))(data);
         });
     
-        data.A[0].Sells.forEach((data_for: any) => {
-          asks = (({Rate, Quantity}) => ({Rate, Quantity, type : 'ask'}))(data_for);
+        data.A[0].Sells.forEach((data: any) => {
+          asks = (({Rate, Quantity}) => ({exchange: 'bittrex', Rate, Quantity, type : 'ask'}))(data);
         });
           socket.emit('recieveBittrexData', { asks, bids });    
       }
     });  
-
-  socketServer.on('connection', (socket) => {
-    setTimeout(() => socket.disconnect(true), 1000);
-    });
   });
 });
 
