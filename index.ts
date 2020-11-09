@@ -1,13 +1,14 @@
 import express from 'express';
-import io from 'socket.io';
 import cors from 'cors'
 
 import { WebsocketClient } from "poloniex-node-api";
 
 require('dotenv').config()
 
-const bittrex = require('node-bittrex-api');
 const app = express();
+const server = require('http').Server(app)
+const socket = require('socket.io')(server, { origins: '*:*'})
+const bittrex = require('node-bittrex-api');
 const PORT = 8000;
 const socketServer = io(PORT)
 const key = process.env.POLONIEX_API_KEY;
@@ -19,9 +20,7 @@ app.get('/', (req, res) => res.send(res.status));
 
 app.use(cors())
 
-socketServer.origins('*:*')
-
-socketServer.on('connect', (socket) => {
+socketServer.on('connect', (socket:any) => {
 
   socket.on('fetchPolinexData', () => {
     poloniex.connect();
