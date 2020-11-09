@@ -8,7 +8,8 @@ require('dotenv').config()
 
 const bittrex = require('node-bittrex-api');
 const app = express();
-const socketServer = io(server, { origins: '*:*'})
+const PORT = 8000;
+const socketServer = io(PORT)
 const key = process.env.POLONIEX_API_KEY;
 const secret = process.env.POLONIEX_API_SECRET;
 const channels = ["BTC_ETH"];
@@ -17,6 +18,8 @@ const poloniex = new WebsocketClient({ key, secret, channels });
 app.get('/', (req, res) => res.send(res.status));
 
 app.use(cors())
+
+socketServer.origins('*:*')
 
 socketServer.on('connect', (socket) => {
 
