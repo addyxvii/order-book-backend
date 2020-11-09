@@ -1,16 +1,15 @@
 import express from 'express';
+import io from 'socket.io';
 import cors from 'cors'
 
 import { WebsocketClient } from "poloniex-node-api";
 
 require('dotenv').config()
 
-const app = express();
-const server = require('http').Server(app)
-const socket = require('socket.io')(server, { origins: '*:*'})
 const bittrex = require('node-bittrex-api');
+const app = express();
 const PORT = 8000;
-const socketServer = io(PORT)
+const socketServer = io(PORT, { origins: '*:*'})
 const key = process.env.POLONIEX_API_KEY;
 const secret = process.env.POLONIEX_API_SECRET;
 const channels = ["BTC_ETH"];
@@ -20,7 +19,7 @@ app.get('/', (req, res) => res.send(res.status));
 
 app.use(cors())
 
-socketServer.on('connect', (socket:any) => {
+socketServer.on('connect', (socket) => {
 
   socket.on('fetchPolinexData', () => {
     poloniex.connect();
