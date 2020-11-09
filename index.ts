@@ -19,6 +19,8 @@ app.get('/', (req, res) => res.send(res.status));
 
 app.use(cors())
 
+socketServer.origins('*:*')
+
 socketServer.on('connect', (socket) => {
 
   socket.on('fetchPolinexData', () => {
