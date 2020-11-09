@@ -18,10 +18,6 @@ const poloniex = new WebsocketClient({ key, secret, channels });
 app.get('/', (req, res) => res.send(res.status));
 
 app.use(cors())
-  .use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    next();
-  })
 
 socketServer.on('connect', (socket) => {
 
