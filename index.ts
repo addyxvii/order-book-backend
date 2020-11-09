@@ -20,7 +20,7 @@ app.get('/', (req, res) => res.send(res.status));
 app.use(cors())
 
 socketServer.origins((origin, callback) => {
-  if (origin !== 'https://order-book-web-client.herokuapp.com') {
+  if (origin !== '*') {
     return callback('origin not allowed', false);
   }
   callback(null, true);
